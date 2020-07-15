@@ -1,16 +1,18 @@
 <template>
   <q-layout>
     <q-page-container>
-      <router-view />
+      <router-view :objectData="objectData"/>
     </q-page-container>
   </q-layout>
 </template>
 
 <script>
+import Data from '../assets/data'
 export default {
   name: 'MainLayout',
   data () {
     return {
+      objectData: new Data()
     }
   }
 }

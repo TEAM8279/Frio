@@ -1,49 +1,55 @@
 <template>
   <q-page>
-    <q-tab-panels
+    <q-tab-panels ref="recipesView"
       v-model="panel"
       animated
       swipeable
       vertical
-      infinite
     >
       <q-tab-panel name="main">
         <div class="landing">
           <h1>Donne moi une recette avec</h1>
           <q-btn style="background-color: #F7A62B" class="button-ingredient" label="Ingrédients" />
           <div class="explore">
-            <p>Explore</p>
+            <p>Recettes</p>
             <img src="../assets/chevron-down.png" alt="down">
           </div>
         </div>
       </q-tab-panel>
       <q-tab-panel v-for="recipe in recipes" :key="recipe.id" :name="recipe.id">
-        <recipe :recipe="recipe"></recipe>
+        <recipe :recipe="recipe" :img_path="objectData.getImgPath()" :object-data="objectData" :recipes-view="$refs.recipesView"></recipe>
       </q-tab-panel>
     </q-tab-panels>
   </q-page>
 </template>
 
 <script>
-import Data from '../assets/data'
 import Recipe from 'components/Recipe'
 export default {
   name: 'PageIndex',
+  props: ['objectData'],
   components: {
     Recipe
   },
   watch: {
     panel: function () {
       if (this.panel === this.recipes[this.recipes.length - 1].id) {
-        this.recipes = this.recipes.concat(Data.getRecipesAtEnd(this.panel))
+        this.objectData.getRecipesAtEnd(this.recipes.length, data => {
+          this.recipes = this.recipes.concat(data)
+        })
       }
     }
   },
   data () {
     return {
-      recipes: Data.getRecipes(),
+      recipes: [],
       panel: 'main'
     }
+  },
+  mounted () {
+    this.objectData.getRecipes(data => {
+      this.recipes = data
+    })
   }
 }
 </script>
