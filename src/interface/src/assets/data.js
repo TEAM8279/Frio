@@ -7,6 +7,7 @@ export default class Data {
     this.base_url_path = 'https://parallgames.net:58279'
     this.img_path = 'http://parallgames.net/assets/img/'
     this.ingredients = []
+    this.selectedIngredients = []
     // Get of ingredients
     Axios.get(this.base_url_path + '/ingredients').then(response => {
       this.ingredients = response.data

@@ -9,7 +9,17 @@
       <q-tab-panel name="main">
         <div class="landing">
           <h1>Donne moi une recette avec</h1>
-          <q-btn style="background-color: #F7A62B" class="button-ingredient" label="Ingrédients" />
+          <q-btn style="background-color: #F7A62B" class="button-ingredient" label="Ingrédients" @click="dialog = true"/>
+          <p style="color: #00bcd4">{{ objectData.selectedIngredients }}</p>
+          <q-dialog
+            v-model="dialog"
+            persistent
+            :maximized="maximizedToggle"
+            transition-show="slide-up"
+            transition-hide="slide-down"
+          >
+            <ingredients :object-data="objectData"></ingredients>
+          </q-dialog>
           <div class="explore">
             <p>Recettes</p>
             <img src="../assets/chevron-down.png" alt="down">
@@ -25,11 +35,13 @@
 
 <script>
 import Recipe from 'components/Recipe'
+import Ingredients from 'components/Ingredients'
 export default {
   name: 'PageIndex',
   props: ['objectData'],
   components: {
-    Recipe
+    Recipe,
+    Ingredients
   },
   watch: {
     panel: function () {
@@ -43,7 +55,9 @@ export default {
   data () {
     return {
       recipes: [],
-      panel: 'main'
+      panel: 'main',
+      dialog: false,
+      maximizedToggle: true
     }
   },
   mounted () {
