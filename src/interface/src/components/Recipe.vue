@@ -13,6 +13,9 @@
         </div>
         <div class="element" @click="switchToOther">
           <p class="title">{{ recipe.name }}</p>
+          <p class="missing" v-show="recipe.missing_ingredients.length > 0">
+            manquant: <span v-for="(ingredient_missed, index) in recipe.missing_ingredients" :key="ingredient_missed">{{ objectData.getIngredientById(ingredient_missed).name }}<span v-if="index != recipe.missing_ingredients.length -1">, </span></span>
+          </p>
         </div>
         <div class="filter"></div>
         <div class="img" :style="'background-image: url(\'' + img_path + recipe.icon + '\')'"></div>
@@ -96,6 +99,11 @@ export default {
     transform: translateY(-100%);
     .title {
       padding: 0 20px 0 20px;
+      margin: 0;
+    }
+    .missing {
+      font-size: 18px;
+      padding: 0 20px;
     }
   }
   .filter {
