@@ -1,9 +1,9 @@
 <template>
     <div class="ingredients">
       <div class="flex">
-        <ingredient v-for="ingredient in objectData.ingredients" :key="ingredient.id" :ingredient="ingredient" :img-base-path="objectData.getImgPath()" :object-data="objectData"></ingredient>
+        <ingredient v-for="ingredient in objectData.ingredients" :key="ingredient.id" :ingredient="ingredient" :img-base-path="objectData.img_path" :object-data="objectData"></ingredient>
       </div>
-      <q-btn style="background-color: #F7A62B" class="button-search" label="Chercher" @click="dialog = false" v-close-popup/>
+      <q-btn style="background-color: #F7A62B" class="button-search" label="Chercher" @click="searchRecipes" v-close-popup/>
     </div>
 </template>
 
@@ -14,6 +14,13 @@ export default {
   props: ['objectData'],
   components: {
     Ingredient
+  },
+  methods: {
+    searchRecipes () {
+      this.dialog = false
+      this.objectData.getRecipesWithSpecifiedIngredients()
+      this.objectData.selectedIngredients = []
+    }
   }
 }
 </script>
@@ -23,6 +30,8 @@ export default {
   height: 100vh;
   .flex {
     justify-content: center;
+    max-width: 340px;
+    margin: auto;
   }
 }
 .button-search {

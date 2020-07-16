@@ -1,4 +1,3 @@
-import RecipesWithSpecified from './specifiedrecipes'
 import Axios from 'axios'
 
 export default class Data {
@@ -8,43 +7,54 @@ export default class Data {
     this.img_path = 'http://parallgames.net/assets/img/'
     this.ingredients = []
     this.selectedIngredients = []
-    // Get of ingredients
+    this.recipes = []
+
+    // Drop item in class variables
+    this.getIngredients()
+    this.getRecipes()
+  }
+
+  // gestion d'ingrédient
+  getIngredients () {
     Axios.get(this.base_url_path + '/ingredients').then(response => {
       this.ingredients = response.data
     })
   }
 
-  getIngredients () {
-    return this.ingredients
-  }
-
   getIngredientById (id) {
-    const ingredient = this.ingredients.filter(ingredient => ingredient.id === id)[0]
-    return ingredient
+    return this.ingredients.filter(ingredient => ingredient.id === id)[0]
   }
 
-  getRecipes (callback) {
+  // gestion de liste de recettes
+  getRecipes () {
     Axios.get(this.base_url_path + '/recipes/top?index=0&count=20').then(response => {
-      callback(response.data)
+      this.recipes = response.data
     })
   }
 
-  getImgPath () {
-    return this.img_path
+  getRecipesWithSpecifiedIngredients () {
+    // eslint-disable-next-line camelcase
+    let s_ingredients = ''
+    this.selectedIngredients.forEach(item => {
+      // eslint-disable-next-line camelcase
+      s_ingredients += item + ','
+    })
+    // eslint-disable-next-line camelcase
+    const url = this.base_url_path + '/recipes/search?ingredients=' + s_ingredients
+    Axios.get(url).then(response => {
+      this.recipes = response.data
+    })
   }
 
-  getRecipesWithSpecifiedIngredients (ingredients) {
-    return RecipesWithSpecified
+  getRecipesAtEnd () {
+    Axios.get(this.base_url_path + '/recipes/top?index=' + this.recipes.length + '&count=20').then(response => {
+      console.log(response.data)
+    })
   }
 
+  // gestion de recette
   getRecipe (id, callback) {
     Axios.get(this.base_url_path + '/recipes/' + id).then(response => {
-      callback(response.data)
-    })
-  }
-
-  getRecipesAtEnd (index, callback) {
-    Axios.get(this.base_url_path + '/recipes/top?index=' + index + '&count=20').then(response => {
       callback(response.data)
     })
   }

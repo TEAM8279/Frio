@@ -30,7 +30,7 @@ export default {
 
 <style scoped lang="scss">
 div {
-  margin: calc((100vw - 300px) / 6);
+  margin: calc((100% - 300px) / 6);
   width: 100px;
   height: 100px;
   text-align: center;
@@ -46,6 +46,7 @@ div {
   }
 }
 div.selected {
-  background-color: #00bcd4;
+  background-color: #F7A62B;
+  color: #2A2A2E;
 }
 </style>

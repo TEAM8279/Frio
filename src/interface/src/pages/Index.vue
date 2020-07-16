@@ -10,7 +10,6 @@
         <div class="landing">
           <h1>Donne moi une recette avec</h1>
           <q-btn style="background-color: #F7A62B" class="button-ingredient" label="Ingrédients" @click="dialog = true"/>
-          <p style="color: #00bcd4">{{ objectData.selectedIngredients }}</p>
           <q-dialog
             v-model="dialog"
             persistent
@@ -26,8 +25,8 @@
           </div>
         </div>
       </q-tab-panel>
-      <q-tab-panel v-for="recipe in recipes" :key="recipe.id" :name="recipe.id">
-        <recipe :recipe="recipe" :img_path="objectData.getImgPath()" :object-data="objectData" :recipes-view="$refs.recipesView"></recipe>
+      <q-tab-panel v-for="recipe in objectData.recipes" :key="recipe.id" :name="recipe.id">
+        <recipe :recipe="recipe" :img_path="objectData.img_path" :object-data="objectData" :recipes-view="$refs.recipesView"></recipe>
       </q-tab-panel>
     </q-tab-panels>
   </q-page>
@@ -45,16 +44,13 @@ export default {
   },
   watch: {
     panel: function () {
-      if (this.panel === this.recipes[this.recipes.length - 1].id) {
-        this.objectData.getRecipesAtEnd(this.recipes.length, data => {
-          this.recipes = this.recipes.concat(data)
-        })
+      if (this.panel === this.objectData.recipes[this.objectData.recipes.length - 1].id) {
+        this.objectData.getRecipesAtEnd()
       }
     }
   },
   data () {
     return {
-      recipes: [],
       panel: 'main',
       dialog: false,
       maximizedToggle: true
@@ -86,6 +82,8 @@ export default {
     text-align: center;
     font-weight: normal;
     padding-top: 10vh;
+    max-width: 320px;
+    margin: auto;
   }
   div.explore {
     text-align: center;
