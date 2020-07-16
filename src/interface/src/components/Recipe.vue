@@ -1,20 +1,76 @@
 <template>
-    <div @ class="recipe" ref="recipe">
-      <div class="element">
-        <p class="title">{{ recipe.name }}</p>
+  <q-tab-panels
+    @before-transition="loadRecipe"
+    v-model="panel"
+    animated
+    swipeable
+    class="myTiles"
+  >
+    <q-tab-panel name="view">
+      <div class="recipe" ref="recipe">
+        <div @click="switchToOther">
+          <arrow-right></arrow-right>
+        </div>
+        <div class="element" @click="switchToOther">
+          <p class="title">{{ recipe.name }}</p>
+        </div>
+        <div class="filter"></div>
+        <div class="img" :style="'background-image: url(\'' + img_path + recipe.icon + '\')'"></div>
       </div>
-      <div class="filter"></div>
-      <img :src="recipe.image" alt="">
-    </div>
+    </q-tab-panel>
+    <q-tab-panel name="recipe" style="color: #fff" class="recipeFullView">
+      <div @click="switchToOther">
+        <arrow-left></arrow-left>
+      </div>
+      <img :src="img_path + fullRecipe.icon" alt="Image de la recette" />
+      <p class="title full recipe">{{ fullRecipe.name }}</p>
+      <p class="ingredients title">Ingrédients</p>
+      <ul>
+        <li v-for="ingredient in fullRecipe.ingredients" :key="ingredient.id">{{ ingredient.quantity + ingredient.unit + " " + objectData.getIngredientById(ingredient.id).name }}</li>
+      </ul>
+      <p class="step title">Marche à suivre</p>
+      <ol>
+        <li v-for="step in fullRecipe.instructions" :key="step.id">{{ step }}</li>
+      </ol>
+    </q-tab-panel>
+  </q-tab-panels>
 </template>
 
 <script>
+import ArrowRight from 'assets/ArrowRight'
+import ArrowLeft from 'assets/ArrowLeft'
 export default {
   name: 'Recipe',
-  props: ['recipe'],
+  props: ['recipe', 'img_path', 'objectData', 'recipesView'],
+  components: {
+    ArrowRight,
+    ArrowLeft
+  },
+  data () {
+    return {
+      panel: 'view',
+      fullRecipe: {}
+    }
+  },
   methods: {
     sendMessage () {
-      console.log('hello')
+      console.log(this.recipe)
+      this.panel = 'recipe'
+    },
+    loadRecipe () {
+      this.recipesView.swipeable = !this.recipesView.swipeable
+      if (this.panel === 'recipe') {
+        this.objectData.getRecipe(this.recipe.id, response => {
+          this.fullRecipe = response
+        })
+      }
+    },
+    switchToOther () {
+      if (this.panel === 'view') {
+        this.panel = 'recipe'
+      } else {
+        this.panel = 'view'
+      }
     }
   }
 }
@@ -24,10 +80,12 @@ export default {
 .recipe {
   height: 100vh;
   overflow: hidden;
-  img {
+  .img {
     opacity: 0.5;
     min-height: 100vh;
     min-width: 100vw;
+    background-size: cover;
+    background-position-x: center;
   }
   .element {
     z-index: 300;
@@ -48,5 +106,36 @@ export default {
     color: #233445;
     z-index: 100;
   }
+}
+
+.q-panel.scroll .q-tab-panel{
+  background-color: #2A2A2E;
+  padding: 0;
+}
+.recipeFullView {
+  padding: 0 10px;
+}
+img {
+  max-width: 100%;
+}
+.title.full.recipe {
+  font-size: 48px;
+  color: #F7A62B;
+  height: 100%;
+  padding: 10px;
+  margin: 0;
+}
+.ingredients.title, .step.title {
+  margin: 0;
+  font-size: 30px;
+  color: #F7A62B;
+  padding: 0 10px;
+}
+ul, ol {
+  padding: 10px 40px;
+  font-size: 20px;
+}
+ul li, ol li {
+  padding: 5px;
 }
 </style>

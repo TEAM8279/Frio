@@ -1,49 +1,65 @@
 <template>
   <q-page>
-    <q-tab-panels
+    <q-tab-panels ref="recipesView"
       v-model="panel"
       animated
       swipeable
       vertical
-      infinite
     >
       <q-tab-panel name="main">
         <div class="landing">
           <h1>Donne moi une recette avec</h1>
-          <q-btn style="background-color: #F7A62B" class="button-ingredient" label="Ingrédients" />
+          <q-btn style="background-color: #F7A62B" class="button-ingredient" label="Ingrédients" @click="dialog = true"/>
+          <q-dialog
+            v-model="dialog"
+            persistent
+            :maximized="maximizedToggle"
+            transition-show="slide-up"
+            transition-hide="slide-down"
+          >
+            <ingredients :object-data="objectData"></ingredients>
+          </q-dialog>
           <div class="explore">
-            <p>Explore</p>
+            <p>Recettes</p>
             <img src="../assets/chevron-down.png" alt="down">
           </div>
         </div>
       </q-tab-panel>
-      <q-tab-panel v-for="recipe in recipes" :key="recipe.id" :name="recipe.id">
-        <recipe :recipe="recipe"></recipe>
+      <q-tab-panel v-for="recipe in objectData.recipes" :key="recipe.id" :name="recipe.id">
+        <recipe :recipe="recipe" :img_path="objectData.img_path" :object-data="objectData" :recipes-view="$refs.recipesView"></recipe>
       </q-tab-panel>
     </q-tab-panels>
   </q-page>
 </template>
 
 <script>
-import Data from '../assets/data'
 import Recipe from 'components/Recipe'
+import Ingredients from 'components/Ingredients'
 export default {
   name: 'PageIndex',
+  props: ['objectData'],
   components: {
-    Recipe
+    Recipe,
+    Ingredients
   },
   watch: {
     panel: function () {
-      if (this.panel === this.recipes[this.recipes.length - 1].id) {
-        this.recipes = this.recipes.concat(Data.getRecipesAtEnd(this.panel))
+      if (this.panel === this.objectData.recipes[this.objectData.recipes.length - 1].id) {
+        this.objectData.getRecipesAtEnd()
       }
     }
   },
   data () {
     return {
-      recipes: Data.getRecipes(),
-      panel: 'main'
+      panel: 'main',
+      dialog: false,
+      maximizedToggle: true
     }
+  },
+  mounted () {
+    this.objectData.getRecipes(data => {
+      this.recipes = data
+    })
   }
 }
 </script>
@@ -66,6 +82,8 @@ export default {
     text-align: center;
     font-weight: normal;
     padding-top: 10vh;
+    max-width: 320px;
+    margin: auto;
   }
   div.explore {
     text-align: center;
