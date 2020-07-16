@@ -50,6 +50,6 @@ public class HTTPResponse {
 			return "HTTP/1.1 501 Not Implemented";
 		}
 
-		throw new RuntimeException("Unknown code : " + code);
+		throw new RuntimeException("Unsupported code : " + code);
 	}
 }
