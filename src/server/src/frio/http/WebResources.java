@@ -62,13 +62,14 @@ public class WebResources {
 						response.setData(createRecipeListJSON(selected));
 
 						return response;
-					} catch (Exception e) {
+					} catch (NumberFormatException e) {
 
 					}
 				} else if (parts[1].equals("search")) {
 					String name = request.getParameters().get("name");
+					String ingredients = request.getParameters().get("ingredients");
 
-					if (name != null) {
+					if (name != null && ingredients == null) {
 						ArrayList<Recipe> selected = new ArrayList<>();
 
 						for (int i = 0; i < Storage.recipesCount(); i++) {
@@ -87,6 +88,40 @@ public class WebResources {
 						response.setData(createRecipeListJSON(selected));
 
 						return response;
+					} else if (ingredients != null && name == null) {
+						String[] stringIDS = ingredients.split(",");
+
+						int[] ids = new int[stringIDS.length];
+
+						try {
+							for (int i = 0; i < stringIDS.length; i++) {
+								ids[i] = Integer.parseInt(stringIDS[i]);
+							}
+
+							ArrayList<Recipe> selected = new ArrayList<>();
+
+							for (int i = 0; i < Storage.recipesCount(); i++) {
+								Recipe recipe = Storage.getRecipe(i);
+
+								for (int a = 0; a < ids.length; a++) {
+									if (recipe.containsIngredient(ids[a])) {
+										selected.add(recipe);
+										break;
+									}
+								}
+							}
+
+							response.setCode(200);
+
+							response.addHeader("Access-Control-Allow-Origin", "*");
+							response.addHeader("Content-Type", "application/json");
+
+							response.setData(createRecipeListJSON(selected, ids));
+
+							return response;
+						} catch (NumberFormatException e) {
+
+						}
 					}
 
 					// TODO search by ingredients
@@ -106,7 +141,7 @@ public class WebResources {
 
 							return response;
 						}
-					} catch (Exception e) {
+					} catch (NumberFormatException e) {
 
 					}
 				}
@@ -145,10 +180,16 @@ public class WebResources {
 	}
 
 	private static String createRecipeListJSON(ArrayList<Recipe> selected) {
+		return createRecipeListJSON(selected, new int[0]);
+	}
+
+	private static String createRecipeListJSON(ArrayList<Recipe> selected, int[] availableIngredients) {
 		StringBuilder json = new StringBuilder("[");
 
 		for (int i = 0; i < selected.size(); i++) {
 			Recipe recipe = selected.get(i);
+			int[] missingIngredients = recipe.getMissingIngredients(availableIngredients);
+			int[] usedIngredients = recipe.getUsedIngredients(availableIngredients);
 
 			if (i > 0) {
 				json.append(",");
@@ -160,7 +201,27 @@ public class WebResources {
 
 			json.append("\"name\":\"" + recipe.getName() + "\",");
 
-			json.append("\"icon\":\"" + recipe.getIcon() + "\"");
+			json.append("\"icon\":\"" + recipe.getIcon() + "\",");
+
+			json.append("\"missing_ingredients\":[");
+			for (int j = 0; j < missingIngredients.length; j++) {
+				if (j > 0) {
+					json.append(",");
+				}
+
+				json.append(missingIngredients[j]);
+			}
+			json.append("],");
+
+			json.append("\"used_ingredients\":[");
+			for (int j = 0; j < usedIngredients.length; j++) {
+				if (j > 0) {
+					json.append(",");
+				}
+
+				json.append(usedIngredients[j]);
+			}
+			json.append("]");
 
 			json.append("}");
 		}
