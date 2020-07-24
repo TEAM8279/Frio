@@ -25,6 +25,24 @@ export default class Data {
     return this.ingredients.filter(ingredient => ingredient.id === id)[0]
   }
 
+  selectIngredient (id) {
+    if (this.selectedIngredients.indexOf(id) === -1) {
+      this.selectedIngredients.push(id)
+    }
+  }
+
+  removeIngredient (id) {
+    this.selectedIngredients.splice(this.selectedIngredients.indexOf(id), 1)
+  }
+
+  isIngredientSelected (id) {
+    if (this.selectedIngredients.indexOf(id) === -1) {
+      return false
+    } else {
+      return true
+    }
+  }
+
   // gestion de liste de recettes
   getRecipes () {
     Axios.get(this.base_url_path + '/recipes/top?index=0&count=20').then(response => {
