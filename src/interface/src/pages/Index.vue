@@ -9,8 +9,16 @@
       <q-tab-panel name="main">
         <div class="landing">
           <h1>Donne moi une recette avec</h1>
-          <q-btn style="background-color: #F7A62B" class="button-ingredient" label="Ingrédients" @click="dialog = true"/>
+          <q-scroll-area
+            horizontal
+            style="height: 110px"
+            class="listing-ingredient"
+          >
+            <q-btn label="+" class="button-ingredient" @click="dialog = true"></q-btn>
+            <ingredient v-for="ingredient in objectData.selectedIngredients" :key="ingredient.id" :ingredient="objectData.getIngredientById(ingredient)" :object-data="objectData"></ingredient>
+          </q-scroll-area>
           <q-dialog
+            @close="panel = '0'"
             v-model="dialog"
             persistent
             :maximized="maximizedToggle"
@@ -18,6 +26,7 @@
             transition-hide="slide-down"
           >
             <ingredients :object-data="objectData"></ingredients>
+            <q-btn style="background-color: #F7A62B" class="button-search" label="Chercher" @click="searchRecipes" v-close-popup/>
           </q-dialog>
           <div class="explore">
             <p>Recettes</p>
@@ -25,7 +34,7 @@
           </div>
         </div>
       </q-tab-panel>
-      <q-tab-panel v-for="recipe in objectData.recipes" :key="recipe.id" :name="recipe.id">
+      <q-tab-panel v-for="(recipe, index) in objectData.recipes" :key="recipe.id" :name="index">
         <recipe :recipe="recipe" :img_path="objectData.img_path" :object-data="objectData" :recipes-view="$refs.recipesView"></recipe>
       </q-tab-panel>
     </q-tab-panels>
@@ -35,12 +44,14 @@
 <script>
 import Recipe from 'components/Recipe'
 import Ingredients from 'components/Ingredients'
+import Ingredient from 'components/Ingredient'
 export default {
   name: 'PageIndex',
   props: ['objectData'],
   components: {
     Recipe,
-    Ingredients
+    Ingredients,
+    Ingredient
   },
   watch: {
     panel: function () {
@@ -65,16 +76,18 @@ export default {
 </script>
 
 <style scoped lang="scss">
+  .button-ingredient {
+    color: #2A2A2E;
+    background-color: #F7A62B;
+    display: block;
+    font-size: 24px;
+    width:100px;
+    height: 100px;
+  }
 .landing {
   height: 100vh;
   h1, div.explore p {
     color: #f7a62b
-  }
-  .button-ingredient {
-    color: #2A2A2E;
-    margin: 5vh auto 0 auto;
-    display: block;
-    font-size: 24px;
   }
   h1 {
     font-size: 60px;
@@ -100,5 +113,9 @@ export default {
 .q-panel.scroll .q-tab-panel{
   background-color: #2A2A2E;
   padding: 0;
+}
+.somesome {
+  display: flex;
+  flex-direction: row;
 }
 </style>

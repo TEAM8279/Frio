@@ -1,6 +1,6 @@
 <template>
     <div ref="mainDiv" :class="{selected : isSelected}" @click="selectIngredient(ingredient.id)">
-      <img :src="imgBasePath + ingredient.icon" :alt="ingredient.name">
+      <img :src="objectData.img_path + ingredient.icon" :alt="ingredient.name">
       <p>{{ ingredient.name }}</p>
     </div>
 </template>
@@ -11,17 +11,17 @@ export default {
   props: ['ingredient', 'imgBasePath', 'objectData'],
   data () {
     return {
-      isSelected: false
+      isSelected: this.objectData.isIngredientSelected(this.ingredient.id)
     }
   },
   methods: {
     selectIngredient (id) {
       if (this.isSelected) {
         this.isSelected = false
-        this.objectData.selectedIngredients.splice(this.objectData.selectedIngredients.indexOf(id), 1)
+        this.objectData.removeIngredient(id)
       } else {
         this.isSelected = true
-        this.objectData.selectedIngredients.push(id)
+        this.objectData.selectIngredient(id)
       }
     }
   }
@@ -30,7 +30,6 @@ export default {
 
 <style scoped lang="scss">
 div {
-  margin: calc((100% - 300px) / 6);
   width: 100px;
   height: 100px;
   text-align: center;

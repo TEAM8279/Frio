@@ -19,7 +19,6 @@ export default {
     searchRecipes () {
       this.dialog = false
       this.objectData.getRecipesWithSpecifiedIngredients()
-      this.objectData.selectedIngredients = []
     }
   }
 }
@@ -32,6 +31,9 @@ export default {
     justify-content: center;
     max-width: 340px;
     margin: auto;
+    div {
+      margin: calc((100% - 300px) / 6);
+    }
   }
 }
 .button-search {
