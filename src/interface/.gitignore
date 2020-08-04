@@ -31,3 +31,9 @@ yarn-error.log*
 *.ntvs*
 *.njsproj
 *.sln
+
+# Key files
+*.jks
+
+# Cordova build conf
+build.cordova.json
